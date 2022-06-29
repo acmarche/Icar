@@ -2,13 +2,23 @@
 
 {% block brand %}
     <a class="navbar-brand" href="{{ path('icar_home') }}" title="Accueil">
-        <i class="fas fa-home"></i> Stations</a>
+        <i class="fas fa-home"></i> Icar</a>
 {% endblock %}
 
 {% block menu_top %}
     <li class="nav-item">
-        <a href="{{ path('icar_home') }}" class="nav-link">
-            <i class="fas fa-list"></i> Stations
+        <a href="{{ path('icar_rues') }}" class="nav-link">
+            <i class="fas fa-list"></i> Les rues
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{{ path('icar_localites') }}" class="nav-link">
+            <i class="fas fa-list"></i> Localités
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{{ path('icar_map') }}" class="nav-link">
+            <i class="fas fa-list"></i> Map
         </a>
     </li>
 {% endblock %}

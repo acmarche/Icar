@@ -1,0 +1,24 @@
+{% extends '@AcMarcheIcar/layout.html.twig' %}
+{% block body %}
+
+    <div class="card">
+        <h3 class="card-header">Map icar</h3>
+        <div class="card-body">
+            {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
+            <div class="list-group" {{ stimulus_controller('geolocalisation') }} >
+
+                <button id="find-me" class="btn btn-primary">Find me</button>
+
+                <div class="alert alert-info" id="status">
+
+                </div>
+
+                <a class="" href="" id="map-link">
+                    Lien vers carte
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -5,24 +5,6 @@
         <h3 class="card-header">Test icar</h3>
         <div class="card-body">
             {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Localités</th>
-                </tr>
-                </thead>
-                {% for rue in rues.rues %}
-                    <tr>
-                        <td>
-                            {{ rue.nom }}
-                        </td>
-                        <td>
-                            {{ rue.localites|join(',') }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
         </div>
 
     </div>
