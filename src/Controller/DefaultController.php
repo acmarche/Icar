@@ -3,6 +3,7 @@
 namespace AcMarche\Icar\Controller;
 
 use AcMarche\Icar\Repository\IcarRemoteRepository;
+use AcMarche\Icar\Utils\CoordonateUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,16 @@ class DefaultController extends AbstractController
     #[Route(path: '/', name: 'icar_home')]
     public function index(): Response
     {
-        //dump($this->icarRemoteRepository->getListeRuesByCp(6900));
+        $communes = json_decode($this->icarRemoteRepository->searchCommunes('marche-en-famenne'));
+        $communes = $communes->communes;
+        $utils = new CoordonateUtils();
+        dump($communes[0]);
+        dump($utils->lambertI($communes[0]->xMin, $communes[0]->yMin));
+        dump($utils->lambertII($communes[0]->xMin, $communes[0]->yMin));
+        dump($utils->lambertIII($communes[0]->xMin, $communes[0]->yMin));
+        dump($utils->lambertIIExtend($communes[0]->xMin, $communes[0]->yMin));
+        dump($utils->lamberIV($communes[0]->xMin, $communes[0]->yMin));
+        dump($utils->lambert93($communes[0]->xMin, $communes[0]->yMin));
         $urlExecuted = $this->icarRemoteRepository->urlExecuted;
 
         return $this->render(
