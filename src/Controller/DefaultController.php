@@ -4,12 +4,12 @@ namespace AcMarche\Icar\Controller;
 
 use AcMarche\Icar\Repository\IcarRemoteRepository;
 use AcMarche\Icar\Utils\CoordonateUtils;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[IsGranted(data: 'ROLE_USER')]
+#[IsGranted('ROLE_USER')]
 class DefaultController extends AbstractController
 {
     public function __construct(private IcarRemoteRepository $icarRemoteRepository)
