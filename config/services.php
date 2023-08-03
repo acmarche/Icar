@@ -9,6 +9,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->autowire()
         ->autoconfigure();
 
-    $services->load('AcMarche\Icar\\', __DIR__.'/../src/*')
-        ->exclude([__DIR__.'/../src/{Entity,Tests}']);
+    $services->load('AcMarche\Icar\\', __DIR__ . '/../src/*')
+        ->exclude([__DIR__ . '/../src/{Entity,Tests}']);
 };

@@ -59,12 +59,12 @@ class CoordonateUtils
         $phi0 = 2 * Atan(Exp($L)) - (pi() / 2.0);
         $phiprec = $phi0;
         $phii = 2 * Atan((((1 + $e * Sin($phiprec)) / (1 - $e * Sin($phiprec))) ** ($e / 2.0) * Exp($L))) - (pi(
-                ) / 2.0);
+        ) / 2.0);
 
         while (Abs($phii - $phiprec) >= $eps) {
             $phiprec = $phii;
             $phii = 2 * Atan((((1 + $e * Sin($phiprec)) / (1 - $e * Sin($phiprec))) ** ($e / 2.0) * Exp($L))) - (pi(
-                    ) / 2.0);
+            ) / 2.0);
         }
 
         $phi = $phii;
