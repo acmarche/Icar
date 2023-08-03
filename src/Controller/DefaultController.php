@@ -12,14 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[IsGranted('ROLE_USER')]
 class DefaultController extends AbstractController
 {
-    public function __construct(private IcarRemoteRepository $icarRemoteRepository)
+    public function __construct(private readonly IcarRemoteRepository $icarRemoteRepository)
     {
     }
 
     #[Route(path: '/', name: 'icar_home')]
     public function index(): Response
     {
-        $communes = json_decode($this->icarRemoteRepository->searchCommunes('marche-en-famenne'));
+        $communes = json_decode($this->icarRemoteRepository->searchCommunes('marche-en-famenne'), null, 512, JSON_THROW_ON_ERROR);
         $communes = $communes->communes;
         $utils = new CoordonateUtils();
         dump($communes[0]);
@@ -42,7 +42,7 @@ class DefaultController extends AbstractController
     #[Route(path: '/rues', name: 'icar_rues')]
     public function rues(): Response
     {
-        $rues = json_decode($this->icarRemoteRepository->getListeRuesByCp(6900));
+        $rues = json_decode($this->icarRemoteRepository->getListeRuesByCp(6900), null, 512, JSON_THROW_ON_ERROR);
         $urlExecuted = $this->icarRemoteRepository->urlExecuted;
 
         return $this->render(
@@ -57,7 +57,7 @@ class DefaultController extends AbstractController
     #[Route(path: '/localites', name: 'icar_localites')]
     public function localites(): Response
     {
-        $localites = json_decode($this->icarRemoteRepository->getListeLocalitesByCp(6900));
+        $localites = json_decode($this->icarRemoteRepository->getListeLocalitesByCp(6900), null, 512, JSON_THROW_ON_ERROR);
         $urlExecuted = $this->icarRemoteRepository->urlExecuted;
 
         return $this->render(
@@ -76,7 +76,7 @@ class DefaultController extends AbstractController
         $longitude = "5.3413478";
 
         $urlExecuted = $this->icarRemoteRepository->urlExecuted;
-        $localites = json_decode($this->icarRemoteRepository->getListeLocalitesByCp(6900));
+        $localites = json_decode($this->icarRemoteRepository->getListeLocalitesByCp(6900), null, 512, JSON_THROW_ON_ERROR);
 
         return $this->render(
             '@AcMarcheIcar/map/map.html.twig',

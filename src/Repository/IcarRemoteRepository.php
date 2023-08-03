@@ -184,7 +184,7 @@ class IcarRemoteRepository
 
     public function processBatchGeolocalisation(array $addresses): ?string
     {
-        $req = json_encode($addresses);
+        $req = json_encode($addresses, JSON_THROW_ON_ERROR);
 
         return $this->executeRequest($this->base_uri.'/processBatchGeolocalisation/'.$req);
     }
