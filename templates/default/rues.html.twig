@@ -16,6 +16,7 @@
                 <tr>
                     <th>Nom</th>
                     <th>Localité(s)</th>
+                    <th>Carte</th>
                 </tr>
                 </thead>
                 {% for rue in rues.rues %}
@@ -27,6 +28,9 @@
                             {% for localite in rue.localites %}
                                 <span class="badge text-bg-primary">{{ localite }}</span>
                             {% endfor %}
+                        </td>
+                        <td>
+                            <a href="{{ path('icar_map_rue', {'rue': rue.nom }) }}">Afficher sur la carte</a>
                         </td>
                     </tr>
                 {% endfor %}

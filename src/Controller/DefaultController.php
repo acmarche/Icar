@@ -80,12 +80,9 @@ class DefaultController extends AbstractController
         );
     }
 
-    #[Route(path: '/map/{localite}', name: 'icar_map')]
-    public function map(?string $localite = null): Response
+    #[Route(path: '/map/localite/{localite}', name: 'icar_map_localite')]
+    public function mapLocalite(?string $localite = null): Response
     {
-        $latitude = "50.2283495";
-        $longitude = "5.3413478";
-
         try {
             $localites = $this->icarRepository->findLocalitesByCp();
         } catch (\Exception $e) {
@@ -124,8 +121,48 @@ class DefaultController extends AbstractController
             '@AcMarcheIcar/default/map.html.twig',
             [
                 'urlExecuted' => $urlExecuted,
-                'localite' => $localiteObject,
-                'rues' => $localites,
+                'nom' => $localiteObject->nom,
+                'point1' => $point1,
+                'point2' => $point2,
+            ],
+        );
+    }
+
+    #[Route(path: '/map/rue/{rue}', name: 'icar_map_rue')]
+    public function mapRue(?string $rue = null): Response
+    {
+        try {
+            $rues = $this->icarRepository->findRuesByLocalite(null);
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('home');
+        }
+
+        $rueObject = null;
+        foreach ($rues->rues as $item) {
+            if ($item->nom === $rue) {
+                $rueObject = $item;
+                break;
+            }
+        }
+
+        if (!$rueObject) {
+            $this->addFlash('error', 'Rue non trouvée');
+
+            return $this->redirectToRoute('home');
+        }
+
+        $urlExecuted = $this->icarRepository->urlExecuted();
+
+        $point1 = CoordonateUtils::convertToGeolocalisation($rueObject->xMin, $rueObject->yMin);
+        $point2 = CoordonateUtils::convertToGeolocalisation($rueObject->xMax, $rueObject->yMax);
+
+        return $this->render(
+            '@AcMarcheIcar/default/map.html.twig',
+            [
+                'urlExecuted' => $urlExecuted,
+                'nom' => $rueObject->nom,
                 'point1' => $point1,
                 'point2' => $point2,
             ],

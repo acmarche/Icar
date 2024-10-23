@@ -7,14 +7,19 @@
 {% block body %}
 
     <div class="card">
-        <h3 class="card-header">Affichage de {{ localite.nom }} sur base d'un rectangle </h3>
+        <h3 class="card-header">Situation de <strong>{{ nom }}</strong> sur base d'un rectangle </h3>
         <div class="card-body">
 
-            <h4>Point 1</h4>
-            x: {{ point1.x }} , y: {{ point1.y }}
-
-            <h4>Point 2</h4>
-            x: {{ point2.x }} , y: {{ point2.y }}
+            <table class="table table-bordered">
+                <tr>
+                    <th>Point 1</th>
+                    <td>{{ point1.x }}, {{ point1.y }}</td>
+                </tr>
+                <tr>
+                    <th>Point 2</th>
+                    <td>{{ point2.x }}, {{ point2.y }}</td>
+                </tr>
+            </table>
 
             <div id='openmap' style='width: 100%; height: 800px;' class="border border-primary mt-3">
             </div>
