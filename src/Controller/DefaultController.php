@@ -19,23 +19,9 @@ class DefaultController extends AbstractController
     #[Route(path: '/', name: 'icar_home')]
     public function index(): Response
     {
-        try {
-            $communes = $this->icarRepository->getCommune();
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
-
-            return $this->redirectToRoute('home');
-        }
-
-        $communes = $communes->communes;
-        $marche = $communes[0];
-        $urlExecuted = $this->icarRepository->urlExecuted();
-
         return $this->render(
             '@AcMarcheIcar/default/index.html.twig',
             [
-                'urlExecuted' => $urlExecuted,
-                'marche' => $marche,
             ],
         );
     }
