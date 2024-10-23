@@ -2,7 +2,7 @@
 
 namespace AcMarche\Icar\Controller;
 
-use AcMarche\Icar\Repository\IcarRemoteRepository;
+use AcMarche\Icar\Repository\IcarRepository;
 use AcMarche\Icar\Utils\CoordonateUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,78 +12,137 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class DefaultController extends AbstractController
 {
-    public function __construct(private readonly IcarRemoteRepository $icarRemoteRepository)
-    {
-    }
+    public function __construct(
+        private readonly IcarRepository $icarRepository,
+    ) {}
 
     #[Route(path: '/', name: 'icar_home')]
     public function index(): Response
     {
-        $communes = json_decode($this->icarRemoteRepository->searchCommunes('marche-en-famenne'), null, 512, JSON_THROW_ON_ERROR);
+        try {
+            $communes = $this->icarRepository->getCommune();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('home');
+        }
+
         $communes = $communes->communes;
-        $utils = new CoordonateUtils();
-        dump($communes[0]);
-        dump($utils->lambertI($communes[0]->xMin, $communes[0]->yMin));
-        dump($utils->lambertII($communes[0]->xMin, $communes[0]->yMin));
-        dump($utils->lambertIII($communes[0]->xMin, $communes[0]->yMin));
-        dump($utils->lambertIIExtend($communes[0]->xMin, $communes[0]->yMin));
-        dump($utils->lamberIV($communes[0]->xMin, $communes[0]->yMin));
-        dump($utils->lambert93($communes[0]->xMin, $communes[0]->yMin));
-        $urlExecuted = $this->icarRemoteRepository->urlExecuted;
+        $marche = $communes[0];
+        $urlExecuted = $this->icarRepository->urlExecuted();
 
         return $this->render(
             '@AcMarcheIcar/default/index.html.twig',
             [
                 'urlExecuted' => $urlExecuted,
-            ]
+                'marche' => $marche,
+            ],
         );
     }
 
-    #[Route(path: '/rues', name: 'icar_rues')]
-    public function rues(): Response
+    #[Route(path: '/rues/{localite}', name: 'icar_rues')]
+    public function rues(?string $localite = null): Response
     {
-        $rues = json_decode($this->icarRemoteRepository->getListeRuesByCp(6900), null, 512, JSON_THROW_ON_ERROR);
-        $urlExecuted = $this->icarRemoteRepository->urlExecuted;
+        try {
+            $localites = $this->icarRepository->findLocalitesByCp();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('home');
+        }
+
+        try {
+            $rues = $this->icarRepository->findRuesByLocalite($localite);
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('home');
+        }
+
+        $urlExecuted = $this->icarRepository->urlExecuted();
 
         return $this->render(
             '@AcMarcheIcar/default/rues.html.twig',
             [
                 'urlExecuted' => $urlExecuted,
                 'rues' => $rues,
-            ]
+                'localites' => $localites,
+                'localiteSelected' => $localite,
+            ],
         );
     }
 
     #[Route(path: '/localites', name: 'icar_localites')]
     public function localites(): Response
     {
-        $localites = json_decode($this->icarRemoteRepository->getListeLocalitesByCp(6900), null, 512, JSON_THROW_ON_ERROR);
-        $urlExecuted = $this->icarRemoteRepository->urlExecuted;
+        try {
+            $localites = $this->icarRepository->findLocalitesByCp();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('home');
+        }
+
+        $urlExecuted = $this->icarRepository->urlExecuted();
 
         return $this->render(
             '@AcMarcheIcar/default/localites.html.twig',
             [
                 'urlExecuted' => $urlExecuted,
                 'localites' => $localites,
-            ]
+            ],
         );
     }
 
-    #[Route(path: '/map', name: 'icar_map')]
-    public function map(): Response
+    #[Route(path: '/map/{localite}', name: 'icar_map')]
+    public function map(?string $localite = null): Response
     {
         $latitude = "50.2283495";
         $longitude = "5.3413478";
 
-        $urlExecuted = $this->icarRemoteRepository->urlExecuted;
-        $localites = json_decode($this->icarRemoteRepository->getListeLocalitesByCp(6900), null, 512, JSON_THROW_ON_ERROR);
+        try {
+            $localites = $this->icarRepository->findLocalitesByCp();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('home');
+        }
+
+        $localiteObject = null;
+        if ($localite) {
+            foreach ($localites as $item) {
+                if ($item->nom === $localite) {
+                    $localiteObject = $item;
+                    break;
+                }
+            }
+        }
+        if (!$localiteObject) {
+            try {
+                $communes = $this->icarRepository->getCommune();
+                $communes = $communes->communes;
+                $localiteObject = $communes[0];
+            } catch (\Exception $e) {
+                $this->addFlash('error', $e->getMessage());
+
+                return $this->redirectToRoute('home');
+            }
+        }
+
+        $urlExecuted = $this->icarRepository->urlExecuted();
+
+        $point1 = CoordonateUtils::convertToGeolocalisation($localiteObject->xMin, $localiteObject->yMin);
+        $point2 = CoordonateUtils::convertToGeolocalisation($localiteObject->xMax, $localiteObject->yMax);
 
         return $this->render(
-            '@AcMarcheIcar/map/map.html.twig',
+            '@AcMarcheIcar/default/map.html.twig',
             [
                 'urlExecuted' => $urlExecuted,
-                'rues' => $localites->localites,
-            ]
+                'localite' => $localiteObject,
+                'rues' => $localites,
+                'point1' => $point1,
+                'point2' => $point2,
+            ],
         );
     }
 }

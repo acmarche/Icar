@@ -2,13 +2,20 @@
 {% block body %}
 
     <div class="card">
-        <h3 class="card-header">Les rues de icar</h3>
+        <h3 class="card-header">Liste des rues</h3>
         <div class="card-body">
-            {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
+            <ul class="list-group list-group-horizontal m-3">
+                {% for localite in localites %}
+                    <li class="list-group-item{% if localite.nom == localiteSelected %} border border-success{% endif %}">
+                        <a href="{{ path('icar_rues', {'localite':localite.nom}) }}">{{ localite.nom }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
             <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th>Nom</th>
+                    <th>Localités</th>
                     <th>Localités</th>
                 </tr>
                 </thead>
@@ -18,11 +25,22 @@
                             {{ rue.nom }}
                         </td>
                         <td>
-                            {{ rue.localites|join(',') }}
+                            {% for localite in rue.localites %}
+                                <span class="badge text-bg-primary">{{ localite }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ rue.xMin }}
+                            {{ rue.xMax }}
+                            {{ rue.yMin }}
+                            {{ rue.yMax }}
                         </td>
                     </tr>
                 {% endfor %}
             </table>
+        </div>
+        <div class="card-footer">
+            {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
         </div>
     </div>
 

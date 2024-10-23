@@ -2,17 +2,18 @@
 {% block body %}
 
     <div class="card">
-        <h3 class="card-header">Les localites de icar</h3>
+        <h3 class="card-header">Les localités</h3>
         <div class="card-body">
-            {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
             <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th>Nom</th>
                     <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 </thead>
-                {% for localite in localites.localites %}
+                {% for localite in localites %}
                     <tr>
                         <td>
                             {{ localite.nom }}
@@ -20,9 +21,18 @@
                         <td>
                             {{ localite.commune }}
                         </td>
+                        <td>
+                            {{ localite.cps[0] }}
+                        </td>
+                        <td>
+                            <a href="{{ path('icar_map', {'localite': localite.nom}) }}">Afficher sur la carte</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
+        </div>
+        <div class="card-footer">
+            {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
         </div>
     </div>
 

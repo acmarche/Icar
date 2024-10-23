@@ -2,15 +2,38 @@
 
 namespace AcMarche\Icar\Utils;
 
+use proj4php\Point;
+use proj4php\Proj;
+use proj4php\Proj4php;
+
 class CoordonateUtils
 {
+    public static function convertToGeolocalisation($x, $y)
+    {
+        $proj4 = new Proj4Php();
+
+        // Define the Lambert72 projection (EPSG:31370)
+        $lambert72 = new Proj('EPSG:31370', $proj4);
+
+        // Define the WGS84 projection (EPSG:4326)
+        $wgs84 = new Proj('EPSG:4326', $proj4);
+
+        // Create a point object for the Lambert72 coordinates
+        $pointSrc = new Point($x, $y, $lambert72);
+
+        // Transform the point to WGS84
+        $pointDst = $proj4->transform($wgs84, $pointSrc);
+
+        return ["x" => $pointDst->x, "y" => $pointDst->y];
+    }
+
     public static function lambert93ToWgs84(string $x, string $y): array
     {
         $b8 = 1 / 298.257222101;
         $b10 = sqrt(2 * $b8 - $b8 * $b8);
         $b16 = 0.7256077650532670;
-        $x = number_format((float) $x, 10, '.', '') - 700000;
-        $y = number_format((float) $y, 10, '.', '') - 12_655_612.0499;
+        $x = number_format((float)$x, 10, '.', '') - 700000;
+        $y = number_format((float)$y, 10, '.', '') - 12_655_612.0499;
         $gamma = atan(-$x / $y);
         $latiso = log(11_754_255.426096 / sqrt(($x * $x) + ($y * $y))) / $b16;
         $sinphiit = tanh($latiso + $b10 * atanh($b10 * sin(1)));
@@ -19,12 +42,22 @@ class CoordonateUtils
             $sinphiit = tanh($latiso + $b10 * atanh($b10 * $sinphiit));
         }
 
-        return (['longitude' => ($gamma / $b16 + 3 / 180 * pi()) / pi() * 180, 'latitude' => asin($sinphiit) / pi() * 180]);
+        return ([
+            'longitude' => ($gamma / $b16 + 3 / 180 * pi()) / pi() * 180,
+            'latitude' => asin($sinphiit) / pi() * 180,
+        ]);
     }
 
     public function lambert2gps($x, $y, $lambert): array
     {
-        $lamberts = ["LambertI" => 0, "LambertII" => 1, "LambertIII" => 2, "LamberIV" => 3, "LambertIIExtend" => 4, "Lambert93" => 5];
+        $lamberts = [
+            "LambertI" => 0,
+            "LambertII" => 1,
+            "LambertIII" => 2,
+            "LamberIV" => 3,
+            "LambertIIExtend" => 4,
+            "Lambert93" => 5,
+        ];
         $index = $lamberts[$lambert];
         $ntabs = [0.7604059656, 0.7289686274, 0.6959127966, 0.6712679322, 0.7289686274, 0.7256077650];
         $ctabs = [11_603_796.98, 11_745_793.39, 11_947_992.52, 12_136_281.99, 11_745_793.39, 11_754_255.426];
@@ -59,12 +92,12 @@ class CoordonateUtils
         $phi0 = 2 * Atan(Exp($L)) - (pi() / 2.0);
         $phiprec = $phi0;
         $phii = 2 * Atan((((1 + $e * Sin($phiprec)) / (1 - $e * Sin($phiprec))) ** ($e / 2.0) * Exp($L))) - (pi(
-        ) / 2.0);
+                ) / 2.0);
 
         while (Abs($phii - $phiprec) >= $eps) {
             $phiprec = $phii;
             $phii = 2 * Atan((((1 + $e * Sin($phiprec)) / (1 - $e * Sin($phiprec))) ** ($e / 2.0) * Exp($L))) - (pi(
-            ) / 2.0);
+                    ) / 2.0);
         }
 
         $phi = $phii;
@@ -106,21 +139,21 @@ class CoordonateUtils
 
         $phi840 = Atan(
             $ZWGS84 / ($P * (1 - (($a * $e * $e))
-                    / Sqrt(($XWGS84 * $XWGS84) + ($YWGS84 * $YWGS84) + ($ZWGS84 * $ZWGS84))))
+                    / Sqrt(($XWGS84 * $XWGS84) + ($YWGS84 * $YWGS84) + ($ZWGS84 * $ZWGS84)))),
         );
 
         $phi84prec = $phi840;
 
         $phi84i = Atan(
             ($ZWGS84 / $P) / (1 - (($a * $e * $e * Cos($phi84prec))
-                    / ($P * Sqrt(1 - $e * $e * (Sin($phi84prec) * Sin($phi84prec))))))
+                    / ($P * Sqrt(1 - $e * $e * (Sin($phi84prec) * Sin($phi84prec)))))),
         );
 
         while (Abs($phi84i - $phi84prec) >= $eps) {
             $phi84prec = $phi84i;
             $phi84i = Atan(
                 ($ZWGS84 / $P) / (1 - (($a * $e * $e * Cos($phi84prec))
-                        / ($P * Sqrt(1 - (($e * $e) * (Sin($phi84prec) * Sin($phi84prec)))))))
+                        / ($P * Sqrt(1 - (($e * $e) * (Sin($phi84prec) * Sin($phi84prec))))))),
             );
         }
 

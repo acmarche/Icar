@@ -2,11 +2,23 @@
 {% block body %}
 
     <div class="card">
-        <h3 class="card-header">Test icar</h3>
+        <h3 class="card-header">Icar</h3>
         <div class="card-body">
+            <div class="alert alert-info" role="alert">
+                Cette couche de données contient et localise les adresses postales issues de l'Inventaire Centralisé des
+                Adresses et des Rues (ICAR)<br/>
+                au sein du territoire wallon.
+            </div>
+
+            <p>
+                Plus d'informations: <a href="https://geoportail.wallonie.be/ICAR" target="_blank">
+                    https://geoportail.wallonie.be/ICAR
+                </a>
+            </p>
+        </div>
+        <div class="card-footer">
             {% include '@AcMarcheIcar/_urlexecuted.html.twig' %}
         </div>
-
     </div>
 
 {% endblock %}
