@@ -2,7 +2,7 @@
 {% block body %}
 
     <div class="card">
-        <h3 class="card-header">Liste des rues</h3>
+        <h3 class="card-header">Liste des rues {{ localiteSelected }}</h3>
         <div class="card-body">
             <ul class="list-group list-group-horizontal m-3">
                 {% for localite in localites %}
@@ -15,8 +15,7 @@
                 <thead>
                 <tr>
                     <th>Nom</th>
-                    <th>Localités</th>
-                    <th>Localités</th>
+                    <th>Localité(s)</th>
                 </tr>
                 </thead>
                 {% for rue in rues.rues %}
@@ -28,12 +27,6 @@
                             {% for localite in rue.localites %}
                                 <span class="badge text-bg-primary">{{ localite }}</span>
                             {% endfor %}
-                        </td>
-                        <td>
-                            {{ rue.xMin }}
-                            {{ rue.xMax }}
-                            {{ rue.yMin }}
-                            {{ rue.yMax }}
                         </td>
                     </tr>
                 {% endfor %}

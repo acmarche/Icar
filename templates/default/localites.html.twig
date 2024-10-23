@@ -8,9 +8,10 @@
                 <thead>
                 <tr>
                     <th>Nom</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                    <th>Commune</th>
+                    <th>Cp</th>
+                    <th>Rue</th>
+                    <th>Carte</th>
                 </tr>
                 </thead>
                 {% for localite in localites %}
@@ -23,6 +24,9 @@
                         </td>
                         <td>
                             {{ localite.cps[0] }}
+                        </td>
+                        <td>
+                            <a href="{{ path('icar_rues', {'localite': localite.nom}) }}">Ses rues</a>
                         </td>
                         <td>
                             <a href="{{ path('icar_map', {'localite': localite.nom}) }}">Afficher sur la carte</a>
