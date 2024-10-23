@@ -89,6 +89,17 @@ class IcarRepository
         }
     }
 
+    /**
+     * "infoMsg": "Pas de numéro postal, la position renvoyée est au centre de la rue.",
+     * @param int $cp
+     * @param string $rue
+     * @return void
+     */
+    public function getListPositionsByCpAndRue(int $cp, string $rue)
+    {
+        dump($this->icarRemoteRepository->getListPositionsByCpAndRue($cp, $rue));
+    }
+
     public function geolocalisation(): void
     {
         $communes = $this->getCommune();
